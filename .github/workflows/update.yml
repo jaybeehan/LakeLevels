@@ -47,6 +47,9 @@ jobs:
       - name: Download and process water level data
         run: cargo run -p lake-build --release -- site/data
 
+      - name: Check the site before publishing
+        run: node scripts/smoke-test.mjs site
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
