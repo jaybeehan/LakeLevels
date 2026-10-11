@@ -1,0 +1,13 @@
+[package]
+name = "lake-web"
+version = "0.1.0"
+edition = "2021"
+description = "The page's calculations, compiled to WebAssembly"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+lake-core = { path = "../lake-core" }
+wasm-bindgen = "0.2"

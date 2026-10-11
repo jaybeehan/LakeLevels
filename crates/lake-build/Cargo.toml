@@ -1,0 +1,11 @@
+[package]
+name = "lake-build"
+version = "0.1.0"
+edition = "2021"
+description = "Downloads Muriel Lake's water levels and writes the site's data files"
+license = "MIT"
+
+[dependencies]
+lake-core = { path = "../lake-core" }
+ureq = "2"
+rust_xlsxwriter = "0.99"

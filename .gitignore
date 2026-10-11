@@ -1,0 +1,4 @@
+/target/
+# built by the daily GitHub Action, published with the page (not stored in the repo)
+site/data/
+site/pkg/

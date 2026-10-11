@@ -1,0 +1,8 @@
+[package]
+name = "lake-core"
+version = "0.1.0"
+edition = "2021"
+description = "Water level maths shared by the data builder and the web page (no dependencies)"
+license = "MIT"
+
+[dependencies]

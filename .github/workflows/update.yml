@@ -1,0 +1,64 @@
+name: Update data and publish
+
+on:
+  schedule:
+    - cron: "17 13 * * *"   # every day, about 7 a.m. Alberta time
+  workflow_dispatch:         # "Run workflow" button on the Actions tab
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust (with the WebAssembly target)
+        run: |
+          rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
+          rustup default stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Test the maths
+        run: cargo test -p lake-core
+
+      - name: Build the page's WebAssembly module
+        run: |
+          cargo build -p lake-web --release --target wasm32-unknown-unknown
+          # wasm-bindgen's command-line tool must match the library version exactly
+          WB=$(cargo metadata --format-version 1 | jq -r '.packages[] | select(.name == "wasm-bindgen") | .version')
+          if ! wasm-bindgen --version 2>/dev/null | grep -qF " $WB"; then
+            cargo install wasm-bindgen-cli --version "$WB" --locked --force
+          fi
+          wasm-bindgen --target web --no-typescript --out-dir site/pkg \
+            target/wasm32-unknown-unknown/release/lake_web.wasm
+          ls -l site/pkg
+
+      - name: Download and process water level data
+        run: cargo run -p lake-build --release -- site/data
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
