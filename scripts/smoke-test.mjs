@@ -53,8 +53,8 @@ try {
   ld.add_daily_mean_csv("x,y,DATE,LEVEL\n0,0,2020-01-01,1\n0,0,2020-01-03,3\n");
   ld.add_realtime_csv("x,y,DATETIME,LEVEL\n0,0,2020-01-04T12:00:00Z,5\n0,0,2020-01-04T14:00:00Z,7\n");
   const L = ld.finish();
-  assert.deepEqual(L.level_on(L.first() + 1), [2, 0, 0]);
-  assert.deepEqual(L.level_on(L.last()), [6, 1, 1]);
+  assert.deepEqual(Array.from(L.level_on(L.first() + 1)), [2, 0, 0]);
+  assert.deepEqual(Array.from(L.level_on(L.last())), [6, 1, 1]);
   assert.equal(ld.rt_from(), L.last());
   assert.equal(ld.approved_until(), L.first() + 2);
 
